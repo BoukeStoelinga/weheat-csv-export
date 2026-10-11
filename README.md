@@ -31,8 +31,8 @@ Weheat portal account and calls the `third_party` REST API.
 ```powershell
 mkdir C:\weheat; cd C:\weheat
 $base = 'https://raw.githubusercontent.com/BoukeStoelinga/weheat-csv-export/main'
-Invoke-WebRequest "$base/weheat-export.ps1" -OutFile weheat-export.ps1
-Invoke-WebRequest "$base/weheat-credentials.example.txt" -OutFile weheat-credentials.txt
+Invoke-WebRequest "$base/weheat-export.ps1" -OutFile weheat-export.ps1 -UseBasicParsing
+Invoke-WebRequest "$base/weheat-credentials.example.txt" -OutFile weheat-credentials.txt -UseBasicParsing
 ```
 
 **Option C: Git**
