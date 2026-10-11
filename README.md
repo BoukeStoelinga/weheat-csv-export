@@ -123,6 +123,11 @@ Add `-Verbose` to see every API request.
 
 - **"running scripts is disabled on this system"**: use the
   `powershell -ExecutionPolicy Bypass -File ...` form above.
+- **"Missing ClientId (no credentials file found ...)"**: there's no
+  `weheat-credentials.txt` next to the script. Rename the example file to exactly that name.
+  Windows hides extensions by default, so renaming to `weheat-credentials.txt` in Explorer can
+  give `weheat-credentials.txt.txt`; type just `weheat-credentials` instead (the script also
+  picks up a filled-in `.txt.txt` or example file, with a warning).
 - **`invalid_client`**: client ID or secret is wrong.
 - **`invalid_grant` / "Invalid user credentials"**: username or password is wrong.
 - **403 / 404 on a heat pump**: the heat pump id isn't on your account; check with

@@ -94,7 +94,20 @@ $credKeys = [ordered]@{
 }
 
 $explicitFile = [bool]$CredentialFile
-if (-not $CredentialFile) { $CredentialFile = Join-Path $PSScriptRoot 'weheat-credentials.txt' }
+if (-not $CredentialFile) {
+    $CredentialFile = Join-Path $PSScriptRoot 'weheat-credentials.txt'
+    # Common slip-ups: Explorer hides extensions (so renaming gives .txt.txt),
+    # or the example file was filled in without renaming it
+    if (-not (Test-Path -LiteralPath $CredentialFile)) {
+        foreach ($alt in 'weheat-credentials.txt.txt', 'weheat-credentials.example.txt') {
+            $altPath = Join-Path $PSScriptRoot $alt
+            if ((Test-Path -LiteralPath $altPath) -and (Select-String -LiteralPath $altPath -Pattern '^\s*ClientId\s*[=:]\s*\S' -Quiet)) {
+                Write-Warning "weheat-credentials.txt not found, using $alt instead. Rename it to weheat-credentials.txt."
+                $CredentialFile = $altPath; break
+            }
+        }
+    }
+}
 $fromFile = @{}
 if (Test-Path -LiteralPath $CredentialFile) {
     Write-Host "Reading credentials from $CredentialFile" -ForegroundColor Cyan
@@ -119,7 +132,10 @@ foreach ($name in $credKeys.Keys) {
 }
 
 foreach ($name in 'ClientId', 'ClientSecret', 'Username') {
-    if (-not (Get-Variable $name -ValueOnly)) { throw "Missing $name. Put it in $CredentialFile, pass -$name, or set $($credKeys[$name])." }
+    if (-not (Get-Variable $name -ValueOnly)) {
+        $where = if (Test-Path -LiteralPath $CredentialFile) { "$CredentialFile has no value for it" } else { "no credentials file found at $CredentialFile" }
+        throw "Missing $name ($where). Fill in weheat-credentials.txt next to the script, pass -$name, or set $($credKeys[$name])."
+    }
 }
 if (-not $Password) {
     $secure = Read-Host "Weheat password for $Username" -AsSecureString
